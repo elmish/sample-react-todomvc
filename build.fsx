@@ -121,7 +121,7 @@ Target "Build" (fun _ ->
     projects
     |> Seq.iter (fun s -> 
         let dir = IO.Path.GetDirectoryName s
-        runDotnet dir "build")
+        runDotnet dir "fable npm-run build")
 )
 
 
