@@ -1,11 +1,10 @@
 This is a port of [TodoMVC in Elm](https://github.com/evancz/elm-todomvc) implemented in F# and targeting Fable and React.
 ========
+The app is live at https://fable-elmish.github.io/sample-react-todomvc.
 
-## Build and running the sample
-1. `./build.sh` or `build`
-2. `cd src`
-3. `dotnet fable npm-run start`
-4. open http://localhost:8080/webpack-dev-server/
+## Building and running the sample locally
+1. `./build.sh Watch` or `build Watch`
+2. open http://localhost:8080/webpack-dev-server/
 
 
 
