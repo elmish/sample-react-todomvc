@@ -1,7 +1,5 @@
 source https://nuget.org/api/v2
-nuget FAKE
-
-## storage:none
+storage:none
 
 nuget Fable.Elmish.HMR
 nuget FSharp.Core
@@ -11,3 +9,8 @@ nuget Fable.Elmish.Browser
 nuget Fable.Elmish.Debugger
 
 clitool dotnet-fable
+
+group Build
+    source https://nuget.org/api/v2
+    storage: true
+    nuget FAKE

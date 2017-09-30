@@ -1,3 +1,4 @@
+STORAGE: NONE
 NUGET
   remote: https://www.nuget.org/api/v2
     dotnet-fable (1.2.4) - clitool: true
@@ -57,7 +58,6 @@ NUGET
       Fable.Core (>= 1.2.4) - restriction: >= netstandard1.6
       Fable.Import.Browser (>= 0.1) - restriction: >= netstandard1.6
       FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
-    FAKE (4.63.2)
     FSharp.Compiler.Service (14.0.2) - restriction: >= netcoreapp2.0
       FSharp.Core (>= 4.1.18) - restriction: >= netstandard1.6
       NETStandard.Library (>= 1.6.1) - restriction: >= netstandard1.6
@@ -752,3 +752,8 @@ NUGET
       System.Text.Encoding (>= 4.3) - restriction: && (< net46) (>= netstandard1.3) (< monotouch) (< xamarintvos) (< xamarinwatchos) (< xamarinios) (< xamarinmac)
       System.Threading (>= 4.3) - restriction: && (< net46) (>= netstandard1.3) (< monotouch) (< xamarintvos) (< xamarinwatchos) (< xamarinios) (< xamarinmac)
       System.Xml.ReaderWriter (>= 4.3) - restriction: && (< net46) (>= netstandard1.3) (< monotouch) (< xamarintvos) (< xamarinwatchos) (< xamarinios) (< xamarinmac)
+
+GROUP Build
+NUGET
+  remote: https://www.nuget.org/api/v2
+    FAKE (4.63.2)
