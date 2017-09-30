@@ -8,6 +8,7 @@ module App
 open Fable.Core
 open Fable.Import
 open Elmish
+open Elmish.HMR
 
 let [<Literal>] ESC_KEY = 27.
 let [<Literal>] ENTER_KEY = 13.
@@ -159,7 +160,7 @@ let viewInput (model:string) dispatch =
         R.input [
             ClassName "new-todo"
             Placeholder "What needs to be done?"
-            DefaultValue !^model
+            DefaultValue model // FIXME !^model
             onEnter Add dispatch
             OnChange (fun (ev:React.FormEvent) -> !!ev.target?value |> UpdateField |> dispatch)
             AutoFocus true
@@ -191,7 +192,7 @@ let viewEntry todo dispatch =
         ]
       R.input
         [ ClassName "edit"
-          DefaultValue !^todo.description
+          DefaultValue todo.description // FIXME !^todo.description
           Name "title"
           Id ("todo-" + (string todo.id))
           OnInput (fun ev -> UpdateEntry (todo.id, !!ev.target?value) |> dispatch)
@@ -305,6 +306,7 @@ let view model dispatch =
 open Elmish.Debug
 // App
 Program.mkProgram (S.load >> init) updateWithStorage view
+|> Program.withHMR // Add the HMR support
 |> Program.withReact "todoapp"
 |> Program.withConsoleTrace
 |> Program.run
