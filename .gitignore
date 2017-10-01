@@ -13,6 +13,7 @@ npm-debug.log
 # F#
 .fake/
 packages/
+paket-files/
 build/
 obj
 bin
