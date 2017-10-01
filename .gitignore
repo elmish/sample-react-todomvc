@@ -15,6 +15,7 @@ npm-debug.log
 packages/
 paket-files/
 build/
+public/
 obj
 bin
 out
