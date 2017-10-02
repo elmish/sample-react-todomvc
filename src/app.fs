@@ -306,9 +306,8 @@ let view model dispatch =
 open Elmish.Debug
 // App
 Program.mkProgram (S.load >> init) updateWithStorage view
+|> Program.withReact "todoapp"
 #if DEBUG
-    |> Program.withHMR
     |> Program.withConsoleTrace
 #endif
-|> Program.withReact "todoapp"
 |> Program.run
