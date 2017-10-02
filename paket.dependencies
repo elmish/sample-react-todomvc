@@ -1,16 +1,15 @@
 source https://nuget.org/api/v2
+storage:none
 
-nuget FSharp.Core  redirects:force, content:none
+nuget FSharp.Core
 nuget Fable.Core
-nuget Fable.React
-nuget Fable.Elmish
 nuget Fable.Elmish.React
 nuget Fable.Elmish.Browser
 nuget Fable.Elmish.Debugger
 
-group Build
-framework: net46
+clitool dotnet-fable
 
+group Build
     source https://nuget.org/api/v2
-    nuget FSharp.Core  redirects:force, content:none
+    storage: true
     nuget FAKE

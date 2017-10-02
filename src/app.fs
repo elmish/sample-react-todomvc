@@ -159,7 +159,7 @@ let viewInput (model:string) dispatch =
         R.input [
             ClassName "new-todo"
             Placeholder "What needs to be done?"
-            DefaultValue !^model
+            DefaultValue model
             onEnter Add dispatch
             OnChange (fun (ev:React.FormEvent) -> !!ev.target?value |> UpdateField |> dispatch)
             AutoFocus true
@@ -191,7 +191,7 @@ let viewEntry todo dispatch =
         ]
       R.input
         [ ClassName "edit"
-          DefaultValue !^todo.description
+          DefaultValue todo.description
           Name "title"
           Id ("todo-" + (string todo.id))
           OnInput (fun ev -> UpdateEntry (todo.id, !!ev.target?value) |> dispatch)
@@ -306,5 +306,7 @@ open Elmish.Debug
 // App
 Program.mkProgram (S.load >> init) updateWithStorage view
 |> Program.withReact "todoapp"
-|> Program.withConsoleTrace
+#if DEBUG
+    |> Program.withConsoleTrace
+#endif
 |> Program.run

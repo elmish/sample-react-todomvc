@@ -13,7 +13,9 @@ npm-debug.log
 # F#
 .fake/
 packages/
+paket-files/
 build/
+public/
 obj
 bin
 out
