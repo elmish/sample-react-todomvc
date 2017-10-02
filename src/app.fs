@@ -8,7 +8,6 @@ module App
 open Fable.Core
 open Fable.Import
 open Elmish
-open Elmish.HMR
 
 let [<Literal>] ESC_KEY = 27.
 let [<Literal>] ENTER_KEY = 13.
