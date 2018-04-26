@@ -17,7 +17,7 @@ let yarn =
        | ex -> failwith ( sprintf "yarn not found (%A)\n" ex )
 
 let gitName = "sample-react-todomvc"
-let gitOwner = "fable-elmish"
+let gitOwner = "elmish"
 let gitHome = sprintf "https://github.com/%s" gitOwner
 
 // Filesets
