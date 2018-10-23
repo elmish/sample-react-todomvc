@@ -15,17 +15,6 @@ let [<Literal>] ALL_TODOS = "all"
 let [<Literal>] ACTIVE_TODOS = "active"
 let [<Literal>] COMPLETED_TODOS = "completed"
 
-// Local storage interface
-module S =
-    let private STORAGE_KEY = "elmish-react-todomvc"
-    let [<PassGenericsAttribute>] load<'T> (): 'T option =
-        Browser.localStorage.getItem(STORAGE_KEY)
-        |> unbox
-        |> Core.Option.map (JsInterop.ofJson)
-
-    let save<'T> (model: 'T) =
-        Browser.localStorage.setItem(STORAGE_KEY, JsInterop.toJson model)
-
 
 // MODEL
 type Entry =
@@ -128,6 +117,19 @@ let update (msg:Msg) (model:Model) : Model*Cmd<Msg>=
     | ChangeVisibility visibility ->
         { model with visibility = visibility }, []
 
+// Local storage interface
+module S =
+    let private STORAGE_KEY = "elmish-react-todomvc"
+    let private decoder = Thoth.Json.Decode.Auto.generateDecoder<Model>()
+    let load (): Model option =
+        Browser.localStorage.getItem(STORAGE_KEY)
+        |> unbox
+        |> Core.Option.bind (Thoth.Json.Decode.fromString decoder >> function | Ok r -> Some r | _ -> None)
+
+    let save (model: Model) =
+        Browser.localStorage.setItem(STORAGE_KEY, Thoth.Json.Encode.Auto.toString(1,model))
+
+
 let setStorage (model:Model) : Cmd<Msg> =
     Cmd.attemptFunc S.save model (string >> Failure)
 
@@ -159,7 +161,7 @@ let viewInput (model:string) dispatch =
         R.input [
             ClassName "new-todo"
             Placeholder "What needs to be done?"
-            DefaultValue model
+            valueOrDefault model
             onEnter Add dispatch
             OnChange (fun (ev:React.FormEvent) -> !!ev.target?value |> UpdateField |> dispatch)
             AutoFocus true
@@ -191,7 +193,7 @@ let viewEntry todo dispatch =
         ]
       R.input
         [ ClassName "edit"
-          DefaultValue todo.description
+          valueOrDefault todo.description
           Name "title"
           Id ("todo-" + (string todo.id))
           OnInput (fun ev -> UpdateEntry (todo.id, !!ev.target?value) |> dispatch)
@@ -307,6 +309,6 @@ open Elmish.Debug
 Program.mkProgram (S.load >> init) updateWithStorage view
 |> Program.withReact "todoapp"
 #if DEBUG
-    |> Program.withConsoleTrace
+    |> Program.withDebugger
 #endif
 |> Program.run

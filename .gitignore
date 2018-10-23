@@ -29,3 +29,4 @@ out
 
 *.nupkg
 temp
+.ionide
