@@ -3,9 +3,10 @@ storage:none
 
 nuget FSharp.Core
 nuget Fable.Core
-nuget Fable.Elmish.React
-nuget Fable.Elmish.Browser
-nuget Fable.Elmish.Debugger
+nuget Fable.Elmish.React beta
+nuget Fable.Elmish.Browser beta
+nuget Fable.Elmish.Debugger beta
+nuget Thoth.Json
 
 clitool dotnet-fable
 

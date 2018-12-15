@@ -309,6 +309,6 @@ open Elmish.Debug
 Program.mkProgram (S.load >> init) updateWithStorage view
 |> Program.withReact "todoapp"
 #if DEBUG
-    |> Program.withDebugger
+|> Program.withDebugger
 #endif
 |> Program.run
