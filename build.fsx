@@ -55,17 +55,19 @@ Target "Install" (fun _ ->
 )
 
 Target "Build" (fun _ ->
-    projects
-    |> Seq.iter (fun s -> 
-        let dir = IO.Path.GetDirectoryName s
-        runDotnet dir "fable npm-run build")
+    Npm (fun p ->
+        { p with
+            NpmFilePath = yarn
+            Command = Custom "build"
+        })
 )
 
 Target "Watch" (fun _ ->
-    projects
-    |> Seq.iter (fun s -> 
-        let dir = IO.Path.GetDirectoryName s
-        runDotnet dir "fable npm-run start")
+    Npm (fun p ->
+        { p with
+            NpmFilePath = yarn
+            Command = Custom "start"
+        })
 )
 
 // --------------------------------------------------------------------------------------

@@ -73,7 +73,7 @@ type Msg =
 let update (msg:Msg) (model:Model) : Model*Cmd<Msg>=
     match msg with
     | Failure err ->
-        Fable.Import.Browser.console.error(err)
+        Fable.Core.JS.console.error(err)
         model, []
 
     | Add ->
@@ -122,16 +122,16 @@ module S =
     let private STORAGE_KEY = "elmish-react-todomvc"
     let private decoder = Thoth.Json.Decode.Auto.generateDecoder<Model>()
     let load (): Model option =
-        Browser.localStorage.getItem(STORAGE_KEY)
+        Browser.WebStorage.localStorage.getItem(STORAGE_KEY)
         |> unbox
         |> Core.Option.bind (Thoth.Json.Decode.fromString decoder >> function | Ok r -> Some r | _ -> None)
 
     let save (model: Model) =
-        Browser.localStorage.setItem(STORAGE_KEY, Thoth.Json.Encode.Auto.toString(1,model))
+        Browser.WebStorage.localStorage.setItem(STORAGE_KEY, Thoth.Json.Encode.Auto.toString(1,model))
 
 
 let setStorage (model:Model) : Cmd<Msg> =
-    Cmd.attemptFunc S.save model (string >> Failure)
+    Cmd.OfFunc.attempt S.save model (string >> Failure)
 
 let updateWithStorage (msg:Msg) (model:Model) =
   match msg with
@@ -142,28 +142,28 @@ let updateWithStorage (msg:Msg) (model:Model) =
     newModel, Cmd.batch [ setStorage newModel; cmds ]
 
 // rendering views with React
-module R = Fable.Helpers.React
+open Fable.React.Props
+open Fable.React
 open Fable.Core.JsInterop
-open Fable.Helpers.React.Props
 open Elmish.React
 
 let internal onEnter msg dispatch =
     function
-    | (ev:React.KeyboardEvent) when ev.keyCode = ENTER_KEY ->
+    | (ev:Browser.Types.KeyboardEvent) when ev.keyCode = ENTER_KEY ->
         ev.target?value <- ""
         dispatch msg
     | _ -> ()
     |> OnKeyDown
 
 let viewInput (model:string) dispatch =
-    R.header [ ClassName "header" ] [
-        R.h1 [] [ R.str "todos" ]
-        R.input [
+    header [ ClassName "header" ] [
+        h1 [] [ str "todos" ]
+        input [
             ClassName "new-todo"
             Placeholder "What needs to be done?"
             valueOrDefault model
             onEnter Add dispatch
-            OnChange (fun (ev:React.FormEvent) -> !!ev.target?value |> UpdateField |> dispatch)
+            OnChange (fun ev -> !!ev.target?value |> UpdateField |> dispatch)
             AutoFocus true
         ]
     ]
@@ -174,24 +174,24 @@ let internal classList classes =
     |> ClassName
 
 let viewEntry todo dispatch =
-  R.li
+  li
     [ classList [ ("completed", todo.completed); ("editing", todo.editing) ]]
-    [ R.div
+    [ div
         [ ClassName "view" ]
-        [ R.input
+        [ input
             [ ClassName "toggle"
               Type "checkbox"
               Checked todo.completed
               OnChange (fun _ -> Check (todo.id,(not todo.completed)) |> dispatch) ]
-          R.label
+          label
             [ OnDoubleClick (fun _ -> EditingEntry (todo.id,true) |> dispatch) ]
-            [ R.str todo.description ]
-          R.button
+            [ str todo.description ]
+          button
             [ ClassName "destroy"
               OnClick (fun _-> Delete todo.id |> dispatch) ]
             []
         ]
-      R.input
+      input
         [ ClassName "edit"
           valueOrDefault todo.description
           Name "title"
@@ -214,19 +214,19 @@ let viewEntries visibility entries dispatch =
     let cssVisibility =
         if List.isEmpty entries then "hidden" else "visible"
 
-    R.section
+    section
       [ ClassName "main"
         Style [ Visibility cssVisibility ]]
-      [ R.input
+      [ input
           [ ClassName "toggle-all"
             Type "checkbox"
             Name "toggle"
             Checked allCompleted
             OnChange (fun _ -> CheckAll (not allCompleted) |> dispatch)]
-        R.label
+        label
           [ HtmlFor "toggle-all" ]
-          [ R.str "Mark all as complete" ]
-        R.ul
+          [ str "Mark all as complete" ]
+        ul
           [ ClassName "todo-list" ]
           (entries
            |> List.filter isVisible
@@ -234,36 +234,36 @@ let viewEntries visibility entries dispatch =
 
 // VIEW CONTROLS AND FOOTER
 let visibilitySwap uri visibility actualVisibility dispatch =
-  R.li
+  li
     [ OnClick (fun _ -> ChangeVisibility visibility |> dispatch) ]
-    [ R.a [ Href uri
-            classList ["selected", visibility = actualVisibility] ]
-          [ R.str visibility ] ]
+    [ a [ Href uri
+          classList ["selected", visibility = actualVisibility] ]
+          [ str visibility ] ]
 
 let viewControlsFilters visibility dispatch =
-  R.ul
+  ul
     [ ClassName "filters" ]
     [ visibilitySwap "#/" ALL_TODOS visibility dispatch
-      R.str " "
+      str " "
       visibilitySwap "#/active" ACTIVE_TODOS visibility dispatch
-      R.str " "
+      str " "
       visibilitySwap "#/completed" COMPLETED_TODOS visibility dispatch ]
 
 let viewControlsCount entriesLeft =
   let item =
       if entriesLeft = 1 then " item" else " items"
 
-  R.span
+  span
       [ ClassName "todo-count" ]
-      [ R.strong [] [ R.str (string entriesLeft) ]
-        R.str (item + " left") ]
+      [ strong [] [ str (string entriesLeft) ]
+        str (item + " left") ]
 
 let viewControlsClear entriesCompleted dispatch =
-  R.button
+  button
     [ ClassName "clear-completed"
       Hidden (entriesCompleted = 0)
       OnClick (fun _ -> DeleteComplete |> dispatch)]
-    [ R.str ("Clear completed (" + (string entriesCompleted) + ")") ]
+    [ str ("Clear completed (" + (string entriesCompleted) + ")") ]
 
 let viewControls visibility entries dispatch =
   let entriesCompleted =
@@ -274,7 +274,7 @@ let viewControls visibility entries dispatch =
   let entriesLeft =
       List.length entries - entriesCompleted
 
-  R.footer
+  footer
       [ ClassName "footer"
         Hidden (List.isEmpty entries) ]
       [ lazyView viewControlsCount entriesLeft
@@ -283,21 +283,21 @@ let viewControls visibility entries dispatch =
 
 
 let infoFooter =
-  R.footer [ ClassName "info" ]
-    [ R.p []
-        [ R.str "Double-click to edit a todo" ]
-      R.p []
-        [ R.str "Ported from Elm by "
-          R.a [ Href "https://github.com/et1975" ] [ R.str "Eugene Tolmachev" ]]
-      R.p []
-        [ R.str "Part of "
-          R.a [ Href "http://todomvc.com" ] [ R.str "TodoMVC" ]]
+  footer [ ClassName "info" ]
+    [ p []
+        [ str "Double-click to edit a todo" ]
+      p []
+        [ str "Ported from Elm by "
+          a [ Href "https://github.com/et1975" ] [ str "Eugene Tolmachev" ]]
+      p []
+        [ str "Part of "
+          a [ Href "http://todomvc.com" ] [ str "TodoMVC" ]]
     ]
 
 let view model dispatch =
-  R.div
+  div
     [ ClassName "todomvc-wrapper"]
-    [ R.section
+    [ section
         [ ClassName "todoapp" ]
         [ lazyView2 viewInput model.field dispatch
           lazyView3 viewEntries model.visibility model.entries dispatch
@@ -307,7 +307,7 @@ let view model dispatch =
 open Elmish.Debug
 // App
 Program.mkProgram (S.load >> init) updateWithStorage view
-|> Program.withReact "todoapp"
+|> Program.withReactBatched "todoapp"
 #if DEBUG
 |> Program.withDebugger
 #endif
