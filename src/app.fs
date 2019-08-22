@@ -84,7 +84,8 @@ let update (msg:Msg) (model:Model) : Model*Cmd<Msg>=
         { model with
             uid = model.uid + 1
             field = ""
-            entries = xs }, []
+            entries = xs },
+        []
 
     | UpdateField str ->
       { model with field = str }, []
@@ -115,7 +116,8 @@ let update (msg:Msg) (model:Model) : Model*Cmd<Msg>=
         { model with entries = List.map updateEntry model.entries }, []
 
     | ChangeVisibility visibility ->
-        { model with visibility = visibility }, []
+        { model with visibility = visibility },
+        []
 
 // Local storage interface
 module S =

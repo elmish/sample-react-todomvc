@@ -2,12 +2,12 @@ source https://nuget.org/api/v2
 storage:none
 
 nuget FSharp.Core
-nuget Fable.Core prerelease
-nuget Fable.Browser.Dom prerelease
-nuget Fable.Elmish.React beta
-nuget Fable.Elmish.Browser beta
-nuget Fable.Elmish.Debugger beta
-nuget Thoth.Json prerelease
+nuget Fable.Core
+nuget Fable.Browser.Dom
+nuget Fable.Elmish.React
+nuget Fable.Elmish.Browser
+nuget Fable.Elmish.Debugger
+nuget Thoth.Json
 
 group Build
     source https://nuget.org/api/v2
