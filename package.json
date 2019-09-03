@@ -9,7 +9,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
     "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "react-dom": "^16.0.1",
     "remotedev": "^0.2.7",
     "whatwg-fetch": "^2.0.1"
   },
