@@ -1,91 +1,70 @@
-// include Fake libs
-#r "./packages/build/FAKE/tools/FakeLib.dll"
-#r "System.IO.Compression.FileSystem"
-
+#r "paket:
+nuget Fake.IO.FileSystem
+nuget Fake.DotNet.Cli
+nuget Fake.JavaScript.Yarn
+nuget Fake.Core.Target
+nuget Fake.Tools.Git //"
+#load ".fake/build.fsx/intellisense.fsx"
+open Fake.Core
+open Fake.DotNet
+open Fake.IO
+open Fake.IO.FileSystemOperators
+open Fake.IO.Globbing.Operators
+open Fake.Core.TargetOperators
 open System
-open System.IO
-open Fake
-open Fake.NpmHelper
-open Fake.Git
+open Fake.JavaScript
 
 
-let yarn = 
-    if EnvironmentHelper.isWindows then "yarn.cmd" else "yarn"
-    |> ProcessHelper.tryFindFileOnPath
-    |> function
-       | Some yarn -> yarn
-       | ex -> failwith ( sprintf "yarn not found (%A)\n" ex )
-
-let gitName = "sample-react-todomvc"
-let gitOwner = "elmish"
+let gitName = "sample-react-todo"
+let gitOwner = "fable-elmish"
 let gitHome = sprintf "https://github.com/%s" gitOwner
 
 // Filesets
 let projects  =
       !! "src/**.fsproj"
 
-
-let dotnetcliVersion = "2.2.203"
-let mutable dotnetExePath = "dotnet"
-
-let runDotnet workingDir =
-    DotNetCli.RunCommand (fun p -> { p with ToolPath = dotnetExePath
-                                            WorkingDir = workingDir } )
-
-Target "InstallDotNetCore" (fun _ ->
-   dotnetExePath <- DotNetCli.InstallDotNetSDK dotnetcliVersion
+Target.create "InstallDotNetCore" (fun _ ->
+   DotNet.Options.Create() |> DotNet.install id |> ignore
 )
 
-
-Target "Clean" (fun _ ->
-    CleanDir "build"
+Target.create "Clean" (fun _ ->
+    Shell.cleanDir ".fable"
+    Shell.cleanDir "build"
 )
 
-Target "Install" (fun _ ->
-    Npm (fun p ->
-        { p with
-            NpmFilePath = yarn
-            Command = Install Standard
-        })
+Target.create "Install" (fun _ ->
+    Yarn.install id
     projects
     |> Seq.iter (fun s -> 
         let dir = IO.Path.GetDirectoryName s
-        runDotnet dir "restore"
+        DotNet.restore id dir
     )
 )
 
-Target "Build" (fun _ ->
-    Npm (fun p ->
-        { p with
-            NpmFilePath = yarn
-            Command = Custom "build"
-        })
+Target.create "Build" (fun _ ->
+    Yarn.exec "build" id
 )
 
-Target "Watch" (fun _ ->
-    Npm (fun p ->
-        { p with
-            NpmFilePath = yarn
-            Command = Custom "start"
-        })
+Target.create "Watch" (fun _ ->
+    Yarn.exec "start" id
 )
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
-
-Target "ReleaseSample" (fun _ ->
+open Fake.Tools.Git
+Target.create "ReleaseSample" (fun _ ->
     let tempDocsDir = "temp/gh-pages"
-    CleanDir tempDocsDir
+    Shell.cleanDir tempDocsDir
     Repository.cloneSingleBranch "" (gitHome + "/" + gitName + ".git") "gh-pages" tempDocsDir
 
-    CopyRecursive "build" tempDocsDir true |> tracefn "%A"
+    Shell.copyRecursive "build" tempDocsDir true |> ignore
 
-    StageAll tempDocsDir
-    Git.Commit.Commit tempDocsDir (sprintf "Update generated sample")
+    Staging.stageAll tempDocsDir
+    Commit.exec tempDocsDir (sprintf "Update generated sample")
     Branches.push tempDocsDir
 )
 
-Target "Publish" DoNothing
+Target.create "Publish" ignore
 
 // Build order
 "Clean"
@@ -104,4 +83,4 @@ Target "Publish" DoNothing
   
   
 // start build
-RunTargetOrDefault "Build"
+Target.runOrDefault "Build"
