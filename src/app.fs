@@ -9,8 +9,7 @@ open Fable.Core
 open Fable.Import
 open Elmish
 
-let [<Literal>] ESC_KEY = 27.
-let [<Literal>] ENTER_KEY = 13.
+let [<Literal>] ENTER_KEY = "Enter"
 let [<Literal>] ALL_TODOS = "all"
 let [<Literal>] ACTIVE_TODOS = "active"
 let [<Literal>] COMPLETED_TODOS = "completed"
@@ -151,7 +150,7 @@ open Elmish.React
 
 let internal onEnter msg dispatch =
     function
-    | (ev:Browser.Types.KeyboardEvent) when ev.keyCode = ENTER_KEY ->
+    | (ev:Browser.Types.KeyboardEvent) when ev.key = ENTER_KEY ->
         ev.target?value <- ""
         dispatch msg
     | _ -> ()

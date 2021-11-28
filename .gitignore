@@ -30,3 +30,4 @@ out
 *.nupkg
 temp
 .ionide
+.fable

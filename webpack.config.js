@@ -2,99 +2,88 @@ const path = require("path");
 const webpack = require("webpack");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MinifyPlugin = require("terser-webpack-plugin");
 
-const babelOptions = {
-    presets: [
-      ["@babel/preset-env", {
-          "targets": {
-              "browsers": ["last 2 versions"]
-          },
-          "modules": false
-      }]
-    ]
-  };
-
-const out_path = path.resolve('./build');
-
-const isProduction = process.argv.indexOf("-p") >= 0;
+const isProduction = process.argv.indexOf("serve") < 0;
 console.log("Bundling for " + (isProduction ? "production" : "development") + "...");
 
 const commonPlugins = [
-        new HtmlWebpackPlugin({
-            filename: './index.html',
-            template: './src/index.html'
-        }),
-        new CopyWebpackPlugin([
+    new HtmlWebpackPlugin({
+        filename: './index.html',
+        template: './src/index.html'
+    }),
+    new CopyWebpackPlugin({
+        patterns: [
             { from: './node_modules/todomvc-app-css/index.css' }
-        ])];
+        ]}
+    )];
 
 module.exports = {
-    mode: isProduction ? "production" : "development",
+    mode: "development",
+    devtool: isProduction ? false : "source-map",
     entry: isProduction ? // We don't use the same entry for dev and production, to make HMR over style quicker for dev env
-            { demo: [
-                "@babel/polyfill",
-                path.resolve('./src/app.fsproj')
-            ]}
-            : { app: [
-                "@babel/polyfill",
-                path.resolve('./src/app.fsproj') ]},
+    {
+        demo: [
+            './src/out/app.js'
+        ]
+    } : {
+        app: [
+            './src/out/app.js'
+        ]
+    },
     output: {
-        path: out_path,
-        filename: isProduction ? '[name].[hash].js' : '[name].js'
+        path: path.join(__dirname, "./build"),
+        filename: isProduction ? '[name].[hash].js' : '[name].js',
+        publicPath: "/"
     },
     optimization : {
         splitChunks: {
             cacheGroups: {
                 commons: {
-                    test: /[\\/]node_modules[\\/]/,
+                    test: /node_modules/,
                     name: "vendors",
-                    chunks: "all"
-                },
-                fable: {
-                    test: /[\\/]fable-core[\\/]/,
-                    name: "fable",
                     chunks: "all"
                 }
             }
         },
-    },
-    resolve: {
-        modules: [
-            "node_modules", path.resolve("./node_modules/")
-        ]
+        minimizer: isProduction
+            ? [new MinifyPlugin()]
+            : []
     },
     devServer: {
-        contentBase: out_path,
-        port: 8080,
-        hot: true,
-        inline: true
+        port: 8090,
+        static: {
+            directory: './build'
+        }
     },
     module: {
         rules: [
             {
-                test: /\.fs(x|proj)?$/,
-                use: {
-                    loader: "fable-loader",
-                    options: {
-                        define: isProduction ? [] : ["DEBUG"],
-                        extra: { optimizeWatch: true }
-                    }
-                }
+                test: /\.js$/,
+                enforce: "pre",
+                use: ["source-map-loader"],
             },
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',
-                    options: babelOptions
+                    options: {
+                        presets: [
+                            ["@babel/preset-env", {
+                                "modules": false,
+                                "useBuiltIns": "usage",
+                                "corejs": 3
+                            }]
+                        ],
+                    }
                 },
             }
         ]
-    },
+    }, 
     plugins: isProduction
-                ? commonPlugins
-                : commonPlugins.concat([
-                    new webpack.HotModuleReplacementPlugin(),
-                    new webpack.NamedModulesPlugin()
-                ])
-}; 
+        ? commonPlugins
+        : commonPlugins.concat([
+            new webpack.HotModuleReplacementPlugin()
+        ])
+}

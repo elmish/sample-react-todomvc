@@ -1,4 +1,5 @@
 #r "paket:
+nuget FSharp.Core 4.7
 nuget Fake.IO.FileSystem
 nuget Fake.DotNet.Cli
 nuget Fake.JavaScript.Yarn
@@ -23,12 +24,8 @@ let gitHome = sprintf "https://github.com/%s" gitOwner
 let projects  =
       !! "src/**.fsproj"
 
-Target.create "InstallDotNetCore" (fun _ ->
-   DotNet.Options.Create() |> DotNet.install id |> ignore
-)
 
 Target.create "Clean" (fun _ ->
-    Shell.cleanDir ".fable"
     Shell.cleanDir "build"
 )
 
@@ -42,11 +39,11 @@ Target.create "Install" (fun _ ->
 )
 
 Target.create "Build" (fun _ ->
-    Yarn.exec "build" id
+    DotNet.exec id "fable" "src -o src/out --run webpack" |> ignore
 )
 
 Target.create "Watch" (fun _ ->
-    Yarn.exec "start" id
+    DotNet.exec id "fable" "watch src -o src/out -s --run webpack serve" |> ignore
 )
 
 // --------------------------------------------------------------------------------------
@@ -68,12 +65,10 @@ Target.create "Publish" ignore
 
 // Build order
 "Clean"
-  ==> "InstallDotNetCore"
   ==> "Install"
   ==> "Build"
 
 "Clean"
-  ==> "InstallDotNetCore"
   ==> "Install"
   ==> "Watch"
   
