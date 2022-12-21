@@ -6,8 +6,9 @@
     <Compile Include="app.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fable.Elmish.Browser" Version="4.0.0-beta-1" />
-    <PackageReference Include="Fable.Elmish.Debugger" Version="4.0.0-beta-1" />
-    <PackageReference Include="Fable.Elmish.React" Version="4.0.0-beta-1" />
+    <PackageReference Include="Fable.Elmish.Browser" Version="4.0.0-beta-8" />
+    <PackageReference Include="Fable.Elmish.Debugger" Version="4.0.0-beta-2" />
+    <PackageReference Include="Fable.Elmish.React" Version="4.0.0-beta-4" />
+    <PackageReference Include="Fable.React" Version="9.1.0" />
   </ItemGroup>
 </Project>

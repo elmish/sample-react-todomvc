@@ -143,8 +143,8 @@ let updateWithStorage (msg:Msg) (model:Model) =
     newModel, Cmd.batch [ setStorage newModel; cmds ]
 
 // rendering views with React
-open Fable.React.Props
 open Fable.React
+open Fable.React.Props
 open Fable.Core.JsInterop
 open Elmish.React
 

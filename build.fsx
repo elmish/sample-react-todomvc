@@ -1,5 +1,10 @@
 #r "paket:
-nuget FSharp.Core 4.7
+nuget FSharp.Core 6
+nuget Microsoft.Build 17.3.2
+nuget Microsoft.Build.Framework 17.3.2
+nuget Microsoft.Build.Tasks.Core 17.3.2
+nuget Microsoft.Build.Utilities.Core 17.3.2
+
 nuget Fake.IO.FileSystem
 nuget Fake.DotNet.Cli
 nuget Fake.JavaScript.Yarn
