@@ -4,11 +4,11 @@ The app is live at https://elmish.github.io/sample-react-todomvc.
 
 ## Building and running the sample
 Pre-requisites:
-* .NET Core [SDK 5.*](https://docs.microsoft.com/en-us/dotnet/core/install/sdk)
+* .NET Core [SDK 6.*](https://docs.microsoft.com/en-us/dotnet/core/install/sdk)
 * `yarn` installed as a global `npm` or a platform package and available in the path 
 
 To build locally and start the webpack-devserver:
 * once: `dotnet tool restore`
-* `dotnet fake build -t Watch`
+* `dotnet fsi build.fsx -t Watch`
 
 open [localhost:8090](http://localhost:8090)
