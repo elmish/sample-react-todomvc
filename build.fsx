@@ -1,16 +1,10 @@
-#r "paket:
-nuget FSharp.Core 6
-nuget Microsoft.Build 17.3.2
-nuget Microsoft.Build.Framework 17.3.2
-nuget Microsoft.Build.Tasks.Core 17.3.2
-nuget Microsoft.Build.Utilities.Core 17.3.2
+#!/usr/bin/env -S dotnet fsi
+#r "nuget: Fake.IO.FileSystem"
+#r "nuget: Fake.DotNet.Cli"
+#r "nuget: Fake.JavaScript.Yarn"
+#r "nuget: Fake.Core.Target"
+#r "nuget: Fake.Tools.Git"
 
-nuget Fake.IO.FileSystem
-nuget Fake.DotNet.Cli
-nuget Fake.JavaScript.Yarn
-nuget Fake.Core.Target
-nuget Fake.Tools.Git //"
-#load ".fake/build.fsx/intellisense.fsx"
 open Fake.Core
 open Fake.DotNet
 open Fake.IO
@@ -29,6 +23,12 @@ let gitHome = sprintf "https://github.com/%s" gitOwner
 let projects  =
       !! "src/**.fsproj"
 
+System.Environment.GetCommandLineArgs() 
+|> Array.skip 2 // fsi.exe; build.fsx
+|> Array.toList
+|> Context.FakeExecutionContext.Create false __SOURCE_FILE__
+|> Context.RuntimeContext.Fake
+|> Context.setExecutionContext
 
 Target.create "Clean" (fun _ ->
     Shell.cleanDir "build"
