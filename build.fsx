@@ -1,9 +1,9 @@
 #!/usr/bin/env -S dotnet fsi
-#r "nuget: Fake.IO.FileSystem"
-#r "nuget: Fake.DotNet.Cli"
-#r "nuget: Fake.JavaScript.Yarn"
-#r "nuget: Fake.Core.Target"
-#r "nuget: Fake.Tools.Git"
+#r "nuget: Fake.IO.FileSystem, 5.23.1"
+#r "nuget: Fake.DotNet.Cli, 5.23.1"
+#r "nuget: Fake.JavaScript.Yarn, 5.23.1"
+#r "nuget: Fake.Core.Target, 5.23.1"
+#r "nuget: Fake.Tools.Git, 5.23.1"
 
 open Fake.Core
 open Fake.DotNet
