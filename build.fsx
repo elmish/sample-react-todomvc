@@ -1,16 +1,18 @@
 #!/usr/bin/env -S dotnet fsi
+#r "nuget: Fake.Core.Target, 5.23.1"
 #r "nuget: Fake.IO.FileSystem, 5.23.1"
 #r "nuget: Fake.DotNet.Cli, 5.23.1"
-#r "nuget: Fake.JavaScript.Yarn, 5.23.1"
-#r "nuget: Fake.Core.Target, 5.23.1"
+#r "nuget: Fake.JavaScript.Npm, 5.23.1"
 #r "nuget: Fake.Tools.Git, 5.23.1"
+#r "nuget: MSBuild.StructuredLogger, 2.2.441"
 
 open Fake.Core
+open Fake.Core.TargetOperators
 open Fake.DotNet
+open Fake.Tools
 open Fake.IO
 open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
-open Fake.Core.TargetOperators
 open System
 open Fake.JavaScript
 
@@ -23,7 +25,8 @@ let gitHome = sprintf "https://github.com/%s" gitOwner
 let projects  =
       !! "src/**.fsproj"
 
-System.Environment.GetCommandLineArgs() 
+
+System.Environment.GetCommandLineArgs()
 |> Array.skip 2 // fsi.exe; build.fsx
 |> Array.toList
 |> Context.FakeExecutionContext.Create false __SOURCE_FILE__
@@ -35,7 +38,7 @@ Target.create "Clean" (fun _ ->
 )
 
 Target.create "Install" (fun _ ->
-    Yarn.install id
+    Npm.install id
     projects
     |> Seq.iter (fun s -> 
         let dir = IO.Path.GetDirectoryName s

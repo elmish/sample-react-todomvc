@@ -231,7 +231,7 @@ let viewEntries visibility entries dispatch =
           [ ClassName "todo-list" ]
           (entries
            |> List.filter isVisible
-           |> List.map (fun i -> lazyView2 viewEntry i dispatch)) ]
+           |> List.map (fun i -> lazyView2 viewEntry i dispatch |> withKey (string i.id))) ]
 
 // VIEW CONTROLS AND FOOTER
 let visibilitySwap uri visibility actualVisibility dispatch =

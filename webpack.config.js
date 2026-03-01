@@ -1,5 +1,4 @@
 const path = require("path");
-const webpack = require("webpack");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MinifyPlugin = require("terser-webpack-plugin");
@@ -33,7 +32,7 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname, "./build"),
-        filename: isProduction ? '[name].[hash].js' : '[name].js',
+        filename: isProduction ? '[name].[contenthash].js' : '[name].js',
         publicPath: "/"
     },
     optimization : {
@@ -81,9 +80,5 @@ module.exports = {
             }
         ]
     }, 
-    plugins: isProduction
-        ? commonPlugins
-        : commonPlugins.concat([
-            new webpack.HotModuleReplacementPlugin()
-        ])
+    plugins: commonPlugins
 }
