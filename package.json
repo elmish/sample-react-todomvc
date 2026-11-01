@@ -24,7 +24,7 @@
     "webpack-dev-server": "^5.2.6"
   },
   "overrides": {
-    "serialize-javascript": "^7.0.5",
+    "serialize-javascript": "^7.1.4",
     "socketcluster-client": {
       "ws": "^8.19.0"
     }
